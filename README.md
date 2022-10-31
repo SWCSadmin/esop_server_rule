@@ -1,1 +1,1 @@
-"# esop_server_rule" 
+# esop_server_rule
