@@ -26,9 +26,17 @@ public enum Status {
 
     SUCCESS(0, "success", "成功", "成功"),
 
-    INTERNAL_SERVER_ERROR_ARGS(500, "Internal Server Error: {0}", "服务端异常: {0}", "服務端異常:{0}"),
+    INTERNAL_SERVER_ERROR_ARGS(500, "Internal server error: {0}", "服务端异常: {0}", "服務端異常:{0}"),
 
-    NOTIFY_ERROR(1000, "Notification Service Error", "通知服务异常", "通知服務異常"),
+    NODE_SERVER_RESPONSE_ERROR(600, "Node service error: {0}", "Node 服务响应异常: {0}", "Node 服務響應異常: {0}"),
+
+    NOTIFY_ERROR(1000, "Notification service error", "通知服务异常", "通知服務異常"),
+
+    TAX_CALCULATION_NOT_APPLICABLE(1000, "Not applicable as his tax residence is Hong Kong solely.", "不适用，因为其税务居所仅为香港。", "不適用，因為其稅務居所僅為香港。"),
+
+    INCENTIVE_MANAGEMENT_UPLOAD_ERROR(1100, "Incentive management upload error: {0}", "激励管理上传错误: {0}", "激勵管理上傳錯誤: {0}"),
+    INCENTIVE_MANAGEMENT_UPLOAD_DATA_ERROR(1101, "Incentive management upload data error", "激励管理上传数据错误", "激勵管理上傳數據錯誤"),
+
     ;
 
 

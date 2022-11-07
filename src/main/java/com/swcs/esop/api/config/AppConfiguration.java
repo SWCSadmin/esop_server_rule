@@ -19,10 +19,11 @@ package com.swcs.esop.api.config;
 
 import com.alibaba.fastjson2.JSON;
 import com.swcs.esop.api.common.Constants;
-import com.swcs.esop.api.entity.ApiResult;
+import com.swcs.esop.api.common.exception.NodeServerException;
+import com.swcs.esop.api.common.mvc.ApiResult;
 import com.swcs.esop.api.enums.Status;
-import com.swcs.esop.api.interceptor.interceptor.LocaleChangeInterceptor;
-import com.swcs.esop.api.interceptor.interceptor.LoginHandlerInterceptor;
+import com.swcs.esop.api.web.interceptor.LocaleChangeInterceptor;
+import com.swcs.esop.api.web.interceptor.LoginHandlerInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -121,8 +122,12 @@ public class AppConfiguration implements WebMvcConfigurer {
     @Bean
     public HandlerExceptionResolver myHandlerExceptionResolver() {
         return (request, response, handler, e) -> {
-            logger.error(e.getMessage(), e);
-            responseResult(response, ApiResult.errorWithArgs(Status.INTERNAL_SERVER_ERROR_ARGS, e.getMessage()));
+            logger.error("", e);
+            if (e instanceof NodeServerException) {
+                responseResult(response, ApiResult.errorWithArgs(Status.NODE_SERVER_RESPONSE_ERROR, e.getMessage()));
+            } else {
+                responseResult(response, ApiResult.errorWithArgs(Status.INTERNAL_SERVER_ERROR_ARGS, e.getMessage()));
+            }
             return new ModelAndView();
         };
     }

@@ -3,6 +3,10 @@ package com.swcs.esop.api.entity;
 import com.swcs.esop.api.enums.CommunicationTypeEnum;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ClassRelativeResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,8 @@ import java.nio.charset.StandardCharsets;
  */
 @Data
 public class Notification {
+
+    private static final Logger logger = LoggerFactory.getLogger(Notification.class);
 
     /**
      * Possible method supported: Email or SMS or Wechat or Whatsapp or Frontend UI
@@ -50,10 +56,9 @@ public class Notification {
     private String senderJobPosition;
 
     public String loadTemplate() {
-        String filePath = "notify_template" + File.separator + communicationType.toString() + ".txt";
-
-        InputStream is = Notification.class.getClassLoader().getResourceAsStream(filePath);
+        String filePath = "classpath:notify_template" + File.separator + communicationType.toString().toLowerCase() + ".txt";
         try {
+            InputStream is = new ClassRelativeResourceLoader(Notification.class).getResource(filePath).getInputStream();
             String template = IOUtils.toString(is, StandardCharsets.UTF_8);
             return template.replace("{{recipientID}}", recipientID)
                     .replace("{{recipientName}}", recipientName)
@@ -62,10 +67,9 @@ public class Notification {
                     .replace("{{senderName}}", senderName)
                     .replace("{{senderContact}}", senderContact)
                     .replace("{{senderJobPosition}}", senderJobPosition)
-
                     ;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("load notify template error", e);
         }
         return message;
     }

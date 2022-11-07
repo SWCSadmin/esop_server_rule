@@ -75,11 +75,9 @@
     <loggers>
         <logger name="org.apache" level="WARN"/>
         <logger name="org.springframework" level="WARN"/>
-        <logger name="org.thymeleaf" level="WARN"/>
-        <logger name="com.ibatis" level="WARN"/>
         <logger name="springfox" level="WARN"/>
 
-        <logger name="com.linkcloude" level="INFO"/>
+        <logger name="com.swcs.esop" level="INFO"/>
 
         <root level="INFO" additivity="false">
             <appender-ref ref="console"/>

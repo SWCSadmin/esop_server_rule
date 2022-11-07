@@ -35,7 +35,4 @@ public enum CommunicationTypeEnum {
         return null;
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(CommunicationTypeEnum.Email.toString());
-    }
 }
