@@ -2,8 +2,8 @@ package com.swcs.esop.api.util;
 
 import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson2.JSON;
-import com.swcs.esop.api.config.AppProperties;
 import com.swcs.esop.api.common.mvc.ApiResult;
+import com.swcs.esop.api.config.AppProperties;
 import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.entity.auth.NodeVerifyTokenResponse;
 import com.swcs.esop.api.entity.auth.User;
@@ -14,7 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -214,6 +219,11 @@ public class NodeServiceUtil {
                 }
                 str = str.replace("{" + fieldName + "}", value.toString());
             }
+        }
+        try {
+            URLEncoder.encode(str, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("url encode error", e);
         }
         return str;
     }
