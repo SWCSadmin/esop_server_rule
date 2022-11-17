@@ -1,0 +1,32 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+    
+jobs:
+  build:
+    runs-on: self-hosted
+    
+    strategy:
+      matrix:
+        java-version: [8]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Java Version ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build
+      run: ./build.sh
+      working-directory: /home/esopadmin/flyway-9.7.0/
+      
+    - name: Run 
+      run: ./run_prod.sh
+      
+      
+      
