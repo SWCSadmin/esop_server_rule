@@ -1,7 +1,8 @@
 package com.swcs.esop.api.module.excel;
 
-import com.alibaba.excel.context.AnalysisContext;
+import com.swcs.esop.api.entity.IncentiveSchedule;
 import com.swcs.esop.api.entity.KpiStatusInfo;
+import com.swcs.esop.api.entity.ParticipantInfo;
 import com.swcs.esop.api.util.NodeServiceUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,52 +15,33 @@ import java.util.List;
  */
 public class KpiStatusInfoReadListener extends BaseReadListener<KpiStatusInfo> {
 
-    public KpiStatusInfoReadListener(boolean upsert) {
+    private String planId;
+    private List<String> scheduleBatchIds = new ArrayList<>();
+
+    public KpiStatusInfoReadListener(boolean upsert, String planId) {
         super(upsert);
+        this.planId = planId;
+
+        for (IncentiveSchedule incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
+            scheduleBatchIds.add(incentiveSchedule.getSchedule_batch_id());
+        }
     }
 
-    @Override
-    public void invoke(KpiStatusInfo o, AnalysisContext analysisContext) {
-        List<String> errorList = new ArrayList<>();
-
-        if (StringUtils.isBlank(o.getSchedule_batch_id())) {
-            errorList.add("schedule_batch_id is empty");
-        }
-        if (StringUtils.isBlank(o.getParticipant_id())) {
-            errorList.add("participant_id is empty");
-        }
-
-        if (StringUtils.isBlank(o.getKpi_no())) {
-            errorList.add("kpi_no is empty");
-        }
-
-        if (!upsert) {
-            if (!NodeServiceUtil.getKpiStatusInfo(o).isEmpty()) {
-                errorList.add("Record already exists");
-            }
-        } else {
-            if (NodeServiceUtil.getKpiStatusInfo(o).isEmpty()) {
-                insertList.add(o);
-            } else {
-                updateList.add(o);
-            }
-        }
-
-        if (errorList.size() > 0) {
-            o.setError(StringUtils.join(errorList, " | "));
-            errorNum++;
-        }
-        cachedDataList.add(o);
-    }
 
     @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        if (isSuccess()) {
-            if (!insertList.isEmpty()) {
-                NodeServiceUtil.batchAddKpiStatusInfo(insertList);
-            }
-            if (!updateList.isEmpty()) {
-                NodeServiceUtil.batchUpdateKpiStatusInfo(updateList);
+    protected void dataValid(KpiStatusInfo o, List<String> errorList) {
+        // 判断 schedule_batch_id 是否存在
+        String schedule_batch_id = o.getSchedule_batch_id();
+        if (StringUtils.isNotBlank(schedule_batch_id) && !scheduleBatchIds.contains(schedule_batch_id)) {
+            errorList.add("schedule_batch_id " + getMessage("IS_NOT_IN_DB"));
+        }
+        // 判断 participant_id 是否存在
+        String participant_id = o.getParticipant_id();
+        if (StringUtils.isNotBlank(participant_id)) {
+            ParticipantInfo participantInfo = new ParticipantInfo();
+            participantInfo.setParticipant_id(participant_id);
+            if (NodeServiceUtil.getEntity(participantInfo).isEmpty()) {
+                errorList.add("participant_id " + getMessage("IS_NOT_IN_DB"));
             }
         }
     }

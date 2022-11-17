@@ -1,7 +1,8 @@
 package com.swcs.esop.api.module.excel;
 
-import com.alibaba.excel.context.AnalysisContext;
 import com.swcs.esop.api.entity.IncentiveManagement;
+import com.swcs.esop.api.entity.IncentiveSchedule;
+import com.swcs.esop.api.entity.ParticipantInfo;
 import com.swcs.esop.api.util.NodeServiceUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,48 +17,30 @@ import java.util.List;
  */
 public class IncentiveManagementReadListener extends BaseReadListener<IncentiveManagement> {
 
-    public IncentiveManagementReadListener(boolean upsert) {
+    private String planId;
+    private List<String> scheduleBatchIds = new ArrayList<>();
+
+    public IncentiveManagementReadListener(boolean upsert, String planId) {
         super(upsert);
+        this.planId = planId;
+
+        for (IncentiveSchedule incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
+            scheduleBatchIds.add(incentiveSchedule.getSchedule_batch_id());
+        }
     }
 
     @Override
-    public void invoke(IncentiveManagement o, AnalysisContext analysisContext) {
-        List<String> errorList = new ArrayList<>();
-
-        if (StringUtils.isBlank(o.getSchedule_batch_id())) {
-            errorList.add("schedule_batch_id is empty");
+    protected void dataValid(IncentiveManagement o, List<String> errorList) {
+        // 判断 schedule_batch_id 是否存在
+        if (StringUtils.isNotBlank(o.getSchedule_batch_id()) && !scheduleBatchIds.contains(o.getSchedule_batch_id())) {
+            errorList.add("schedule_batch_id " + getMessage("IS_NOT_IN_DB"));
         }
-        if (StringUtils.isBlank(o.getParticipant_id())) {
-            errorList.add("participant_id is empty");
-        }
-
-        if (!upsert) {
-            if (!NodeServiceUtil.getIncentiveManagement(o).isEmpty()) {
-                errorList.add("Record already exists");
-            }
-        } else {
-            if (NodeServiceUtil.getIncentiveManagement(o).isEmpty()) {
-                insertList.add(o);
-            } else {
-                updateList.add(o);
-            }
-        }
-
-        if (errorList.size() > 0) {
-            o.setError(StringUtils.join(errorList, " | "));
-            errorNum++;
-        }
-        cachedDataList.add(o);
-    }
-
-    @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        if (isSuccess()) {
-            if (!insertList.isEmpty()) {
-                NodeServiceUtil.batchAddIncentiveManagement(insertList);
-            }
-            if (!updateList.isEmpty()) {
-                NodeServiceUtil.batchUpdateIncentiveManagement(updateList);
+        // 判断 participant_id 是否存在
+        if (StringUtils.isNotBlank(o.getParticipant_id())) {
+            ParticipantInfo participantInfo = new ParticipantInfo();
+            participantInfo.setParticipant_id(o.getParticipant_id());
+            if (NodeServiceUtil.getEntity(participantInfo).isEmpty()) {
+                errorList.add("participant_id " + getMessage("IS_NOT_IN_DB"));
             }
         }
     }

@@ -1,7 +1,9 @@
 package com.swcs.esop.api.entity;
 
+import com.swcs.esop.api.common.base.BaseRuleInput;
 import com.swcs.esop.api.common.mvc.ApiResult;
 import com.swcs.esop.api.enums.IncentiveStatus;
+import com.swcs.esop.api.enums.Status;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,7 +14,7 @@ import java.util.Date;
  * @date 2022/11/7
  */
 @Data
-public class LapsedIncentiveInput {
+public class LapsedIncentiveInput implements BaseRuleInput {
 
 
     private IncentiveStatus incentiveStatus;
@@ -21,6 +23,23 @@ public class LapsedIncentiveInput {
     private BigDecimal shares;
     private Date vestingDate;   // 授予日期
 
+
+    @Override
+    public ApiResult paramsValid() {
+        if (incentiveStatus == null) {
+            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "incentiveStatus");
+        }
+        if (incentiveStatus.equals(IncentiveStatus.GrantApproved​) && offerExpiryDate == null) {
+            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "offerExpiryDate");
+        }
+        if (incentiveStatus.equals(IncentiveStatus.Granted​) && vestingDate == null) {
+            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "vestingDate");
+        }
+        if (incentiveStatus.equals(IncentiveStatus.Vested​) && exerciseEndDate == null) {
+            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "exerciseEndDate");
+        }
+        return ApiResult.success();
+    }
 
     /**
      * Output:
@@ -35,7 +54,8 @@ public class LapsedIncentiveInput {
      *
      * @return
      */
-    public ApiResult calculation() {
+    public ApiResult ruleCalculation() {
+        BigDecimal data = new BigDecimal(0);
         Date date = new Date();
         if ((incentiveStatus.equals(IncentiveStatus.GrantApproved​) && date.getTime() >= offerExpiryDate.getTime())
                 || (
@@ -47,7 +67,7 @@ public class LapsedIncentiveInput {
                         || incentiveStatus.equals(IncentiveStatus.Cancelled​)
         )
         ) {
-            return ApiResult.success().setData(shares);
+            data = shares;
         } else if ((incentiveStatus.equals(IncentiveStatus.Granted​) && date.getTime() >= vestingDate.getTime())
                 || (
                 incentiveStatus.equals(IncentiveStatus.VestRejected​)
@@ -56,7 +76,7 @@ public class LapsedIncentiveInput {
                         || incentiveStatus.equals(IncentiveStatus.Cancelled​)
         )
         ) {
-            return ApiResult.success().setData(shares);
+            data = shares;
         } else if ((incentiveStatus.equals(IncentiveStatus.Vested​) && date.getTime() >= exerciseEndDate.getTime())
                 || (
                 incentiveStatus.equals(IncentiveStatus.ExerciseLapsed​)
@@ -64,8 +84,8 @@ public class LapsedIncentiveInput {
                         || incentiveStatus.equals(IncentiveStatus.Cancelled​)
         )
         ) {
-            return ApiResult.success().setData(shares);
+            data = shares;
         }
-        return ApiResult.success();
+        return ApiResult.success().setData(data);
     }
 }

@@ -17,7 +17,6 @@
 
 package com.swcs.esop.api.config;
 
-import com.alibaba.fastjson2.JSON;
 import com.swcs.esop.api.common.Constants;
 import com.swcs.esop.api.common.exception.NodeServerException;
 import com.swcs.esop.api.common.mvc.ApiResult;
@@ -38,9 +37,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
 
@@ -124,26 +120,11 @@ public class AppConfiguration implements WebMvcConfigurer {
         return (request, response, handler, e) -> {
             logger.error("", e);
             if (e instanceof NodeServerException) {
-                responseResult(response, ApiResult.errorWithArgs(Status.NODE_SERVER_RESPONSE_ERROR, e.getMessage()));
+                ApiResult.responseResult(response, ApiResult.errorWithArgs(Status.NODE_SERVER_RESPONSE_ERROR, e.getMessage()));
             } else {
-                responseResult(response, ApiResult.errorWithArgs(Status.INTERNAL_SERVER_ERROR_ARGS, e.getMessage()));
+                ApiResult.responseResult(response, ApiResult.errorWithArgs(Status.INTERNAL_SERVER_ERROR_ARGS, e.getMessage()));
             }
             return new ModelAndView();
         };
-    }
-
-    private static void responseResult(HttpServletResponse response, ApiResult result) {
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("Content-type", "application/json;charset=UTF-8");
-        response.setStatus(200);
-        PrintWriter writer;
-        try {
-            writer = response.getWriter();
-            writer.write(JSON.toJSONString(result));
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            logger.error("write response error", e);
-        }
     }
 }

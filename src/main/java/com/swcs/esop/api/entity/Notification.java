@@ -56,7 +56,12 @@ public class Notification {
     private String senderJobPosition;
 
     public String loadTemplate() {
-        String filePath = "classpath:notify_template" + File.separator + communicationType.toString().toLowerCase() + ".txt";
+        String filePath = "notify_template" + File.separator + communicationType.toString().toLowerCase() + ".txt";
+        return loadTemplate(filePath);
+    }
+
+    public String loadTemplate(String filePath) {
+        filePath = "classpath:" + filePath;
         try {
             InputStream is = new ClassRelativeResourceLoader(Notification.class).getResource(filePath).getInputStream();
             String template = IOUtils.toString(is, StandardCharsets.UTF_8);
@@ -73,5 +78,4 @@ public class Notification {
         }
         return message;
     }
-
 }

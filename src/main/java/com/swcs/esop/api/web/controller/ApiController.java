@@ -2,16 +2,14 @@ package com.swcs.esop.api.web.controller;
 
 import com.swcs.esop.api.common.base.BaseController;
 import com.swcs.esop.api.common.mvc.ApiResult;
+import com.swcs.esop.api.config.async.AsyncTask;
+import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.entity.tax.RSUTaxRateInput;
 import com.swcs.esop.api.entity.tax.SASTaxRateInput;
 import com.swcs.esop.api.entity.tax.SOSTaxRateInput;
-import com.swcs.esop.api.enums.SaveMode;
-import com.swcs.esop.api.util.ExcelUtil;
-import com.swcs.esop.api.util.TaxRateUtil;
-import com.swcs.esop.api.config.async.AsyncTask;
-import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.enums.Status;
-import jdk.nashorn.internal.objects.annotations.Getter;
+import com.swcs.esop.api.util.AppUtils;
+import com.swcs.esop.api.util.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -19,6 +17,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 import java.util.concurrent.Future;
 
@@ -68,6 +70,7 @@ public class ApiController extends BaseController {
     @PostMapping("/notify")
     public ApiResult notify(@RequestBody Notification notification) {
         try {
+            notification.setMessage(notification.loadTemplate());
             Future<Boolean> future = asyncTask.notify(notification);
             boolean success = future.get();
             if (success) {
@@ -83,22 +86,22 @@ public class ApiController extends BaseController {
     /**
      * 税额计算
      *
-     * @param taxRateCalculation
+     * @param taxRateInput
      * @return
      */
     @GetMapping("/tax/sos")
-    public ApiResult taxSOS(SOSTaxRateInput taxRateCalculation) {
-        return TaxRateUtil.withholdingServiceForSOS(taxRateCalculation);
+    public ApiResult taxSOS(SOSTaxRateInput taxRateInput) {
+        return taxRateInput.calculation();
     }
 
     @GetMapping("/tax/sas")
-    public ApiResult taxSAS(SASTaxRateInput taxRateCalculation) {
-        return TaxRateUtil.withholdingServiceForSAS(taxRateCalculation);
+    public ApiResult taxSAS(SASTaxRateInput taxRateInput) {
+        return taxRateInput.calculation();
     }
 
     @GetMapping("/tax/rsu")
-    public ApiResult taxRSU(RSUTaxRateInput taxRateCalculation) {
-        return TaxRateUtil.withholdingServiceForRSU(taxRateCalculation);
+    public ApiResult taxRSU(RSUTaxRateInput taxRateInput) {
+        return taxRateInput.calculation();
     }
 
     /**
@@ -109,8 +112,20 @@ public class ApiController extends BaseController {
      * @return
      */
     @PostMapping("/im/upload")
-    public ApiResult imUpload(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert) {
-        return ExcelUtil.parseIncentiveManagement(file, upsert);
+    public ApiResult imUpload(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert, @RequestParam(value = "planId") String planId) {
+        return ExcelUtil.parseIncentiveManagement(file, upsert, planId);
+    }
+
+    /**
+     * 信托交易
+     *
+     * @param file
+     * @param upsert
+     * @return
+     */
+    @PostMapping("/trustTransactions/upload")
+    public ApiResult trustTransactionsUpload(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert, String startDate, String endDate) {
+        return ExcelUtil.parseTrustTransactions(file, upsert, startDate, endDate);
     }
 
     /**
@@ -132,4 +147,85 @@ public class ApiController extends BaseController {
         return lapsedIncentiveInput.calculation();
     }
 
+    /**
+     * Granting Limitation services from ESOP system (Granting at 10% & 30%) - At plan level
+     *
+     * @param grantingInput
+     * @return
+     */
+    @PostMapping("/granting/1")
+    public ApiResult granting1(@RequestBody GrantingInput1 grantingInput) {
+        return grantingInput.calculation();
+    }
+
+    /**
+     * Granting Limitation services from ESOP system (Granting at 1% and (0.1% or HKD 5 M)) - At participant level
+     *
+     * @param grantingInput
+     * @return
+     */
+    @PostMapping("/granting/2")
+    public ApiResult granting2(@RequestBody GrantingInput2 grantingInput) {
+        return grantingInput.calculation();
+    }
+
+
+    /**
+     * Granting Limitation services from ESOP system (Granting 30% or "btw 30-50%" or "> 75%") - At individual & multiple participant level
+     *
+     * @param grantingInput
+     * @return
+     */
+    @PostMapping("/granting/3")
+    public ApiResult granting3(@RequestBody GrantingInput3 grantingInput) {
+        return grantingInput.calculation();
+    }
+
+    /**
+     * 一次性文件下载, 下载成功之后会被删除
+     *
+     * @param fileName
+     * @throws Exception
+     */
+    @GetMapping("/download/once")
+    public void downloadOnce(String fileName) throws Exception {
+        String filePath = AppUtils.getProperty("app.once-file-path");
+        String fullFilePath = filePath + File.separator + fileName;
+        File file = new File(fullFilePath);
+        if (!file.exists()) {
+            ApiResult.responseResult(response, ApiResult.error(Status.FILE_NOT_EXIST_ERROR));
+        } else {
+            response.setContentType("application/force-download");
+            response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
+            byte[] buffer = new byte[1024];
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            try {
+                fis = new FileInputStream(file);
+                bis = new BufferedInputStream(fis);
+                OutputStream os = response.getOutputStream();
+                int i = bis.read(buffer);
+                while (i != -1) {
+                    os.write(buffer, 0, i);
+                    i = bis.read(buffer);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (fis != null) {
+                    fis.close();
+                }
+                // TODO: 待定
+//                file.delete();
+            }
+        }
+    }
+
+    @GetMapping("/blackout")
+    public ApiResult blackout(BlackoutPeriodsInput blackoutPeriodsInput) {
+        return blackoutPeriodsInput.calculation();
+    }
 }

@@ -26,6 +26,9 @@ public enum Status {
 
     SUCCESS(0, "success", "成功", "成功"),
 
+    MISSING_REQUIRED_PARAMS_ERROR(100, "Missing required params: {0}", "缺少必填参数: {0}", "缺少必填參數: {0}"),
+    FILE_NOT_EXIST_ERROR(200, "File not exists", "文件不存在", "檔案不存在"),
+
     INTERNAL_SERVER_ERROR_ARGS(500, "Internal server error: {0}", "服务端异常: {0}", "服務端異常:{0}"),
 
     NODE_SERVER_RESPONSE_ERROR(600, "Node service error: {0}", "Node 服务响应异常: {0}", "Node 服務響應異常: {0}"),

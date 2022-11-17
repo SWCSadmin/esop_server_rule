@@ -29,7 +29,7 @@ public class MailSender implements Sender {
     public MailSender(Notification notification) {
         this.notification = notification;
         this.subject = notification.getTopicTitle();
-        this.content = notification.loadTemplate();
+        this.content = notification.getMessage();
         this.to = notification.getRecipientID().split(",");
     }
 

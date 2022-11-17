@@ -1,7 +1,13 @@
 package com.swcs.esop.api.common.mvc;
 
+import com.alibaba.fastjson2.JSON;
 import com.swcs.esop.api.enums.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.MessageFormat;
 
 /**
@@ -9,6 +15,8 @@ import java.text.MessageFormat;
  * @date 2022/10/21
  */
 public class ApiResult<T> {
+
+    public static final Logger logger = LoggerFactory.getLogger(ApiResult.class);
 
     private boolean success;
 
@@ -108,5 +116,20 @@ public class ApiResult<T> {
     public ApiResult<T> setData(T data) {
         this.data = data;
         return this;
+    }
+
+    public static void responseResult(HttpServletResponse response, ApiResult result) {
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-type", "application/json;charset=UTF-8");
+        response.setStatus(200);
+        PrintWriter writer;
+        try {
+            writer = response.getWriter();
+            writer.write(JSON.toJSONString(result));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            logger.error("write response error", e);
+        }
     }
 }

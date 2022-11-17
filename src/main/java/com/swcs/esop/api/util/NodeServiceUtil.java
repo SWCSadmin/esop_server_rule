@@ -2,31 +2,21 @@ package com.swcs.esop.api.util;
 
 import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson2.JSON;
-import com.swcs.esop.api.common.exception.NodeServerException;
 import com.swcs.esop.api.config.AppProperties;
 import com.swcs.esop.api.common.mvc.ApiResult;
-import com.swcs.esop.api.entity.IncentiveManagement;
-import com.swcs.esop.api.entity.KpiStatusInfo;
+import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.entity.auth.NodeVerifyTokenResponse;
 import com.swcs.esop.api.entity.auth.User;
 import com.swcs.esop.api.entity.auth.UserToken;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author 阮程
@@ -39,24 +29,12 @@ public class NodeServiceUtil {
 
     private static final String URL_GET_LOGIN_TOKEN = "/get/logintoken/%s";
     private static final String URL_VERIFY_TOKEN = "/verify/logintoken";
+    private static final String URL_GET_ALL_SCHEDULE_GROUPS = "/get/all_schedule_groups/%s";
+    private static final String URL_GET_ALL_KPI_CONDITIONS = "/get/all_kpi_conditions/%s";
 
-    // 激励管理接口
-    private static final String URL_GET_INCENTIVE_MANAGEMENT = "/get/incentive_management?schedule_batch_id=%s&participant_id=%s";
-    private static final String URL_GET_MULTIPLE_INCENTIVE_MANAGEMENT = "/get/multiple/incentive_management?idsArray=%s";
-    private static final String URL_ADD_INCENTIVE_MANAGEMENT = "/add/incentive_management";
-    private static final String URL_ADD_MULTIPLE_INCENTIVE_MANAGEMENT = "/add/multiple/incentive_management";
-    private static final String URL_UPDATE_INCENTIVE_MANAGEMENT = "/update/incentive_management/%s/%s";
-    private static final String URL_UPDATE_MULTIPLE_INCENTIVE_MANAGEMENT = "/update/multiple/incentive_management";
-    private static final String URL_DELETE_INCENTIVE_MANAGEMENT = "/delete/incentive_management/%s/%s";
+    private static final Pattern URL_PATTERN = Pattern.compile("\\{(.*?)\\}");
 
-    // KPI 接口
-    private static final String URL_GET_ALL_KPI_STATUS = "/get/all_kpi_status/%s/%s";
-    private static final String URL_GET_MULTIPLE_KPI_STATUS = "/get/multiple/kpi_status?idsArray=%s";
-    private static final String URL_ADD_KPI_STATUS = "/add/kpi_status";
-    private static final String URL_ADD_MULTIPLE_KPI_STATUS = "/add/multiple/kpi_status";
-    private static final String URL_UPDATE_KPI_STATUS = "/update/kpi_status/%s/%s/%s";
-    private static final String URL_UPDATE_MULTIPLE_KPI_STATUS = "/update/multiple/kpi_status";
-    private static final String URL_DELETE_KPI_STATUS = "/delete/kpi_status/%s/%s/%s";
+    private static final Map<String, NodeApiMap> CLASS_API_MAP = new HashMap<>();
 
     private static String nodeServerAddr;
     private static String loginId;
@@ -64,6 +42,47 @@ public class NodeServiceUtil {
     private static String token;
 
     static {
+        // 激励管理接口
+        CLASS_API_MAP.put(IncentiveManagement.class.getName(), new NodeApiMap(
+                "/get/incentive_management?schedule_batch_id={schedule_batch_id}&participant_id={participant_id}",
+                "/get/multiple/incentive_management?idsArray=%s",
+                "/add/incentive_management",
+                "/add/multiple/incentive_management/return/unsuccess",
+                "/update/incentive_management/{schedule_batch_id}/{participant_id}",
+                "/update/multiple/incentive_management",
+                "/delete/incentive_management/{schedule_batch_id}/{participant_id}"
+        ));
+        // KPI 接口
+        CLASS_API_MAP.put(KpiStatusInfo.class.getName(), new NodeApiMap(
+                "/get/all_kpi_status/{schedule_batch_id}/{participant_id}",
+                "/get/multiple/kpi_status?idsArray=%s",
+                "/add/kpi_status",
+                "/add/multiple/kpi_status/return/unsuccess",
+                "/update/kpi_status/{schedule_batch_id}/{kpi_no}/{participant_id}",
+                "/update/multiple/kpi_status",
+                "/delete/kpi_status/{schedule_batch_id}/{kpi_no}/{participant_id}"
+        ));
+        // participantinfo 接口
+        CLASS_API_MAP.put(ParticipantInfo.class.getName(), new NodeApiMap(
+                "/get/participantinfo/{participant_id}",
+                null,
+                "/add/participantinfo",
+                null,
+                "/update/participantinfo/{participant_id}",
+                null,
+                "/delete/participantinfo/{participant_id}"
+        ));
+        // trust_transactions 接口
+        CLASS_API_MAP.put(TrustTransactions.class.getName(), new NodeApiMap(
+                "/get/trust_transactions?start_date={startDate}&end_date={endDate}&transaction_type={transaction_type}",
+                "/get/multiple/trust_transactions?idsArray=%s",
+                "/add/trust_transactions",
+                "/add/multiple/trust_transactions/return/unsuccess",
+                "/update/trust_transactions/{schedule_batch_id}/{kpi_no}/{participant_id}",
+                "/update/multiple/trust_transactions",
+                "/delete/trust_transactions/{schedule_batch_id}/{kpi_no}/{participant_id}"
+        ));
+
         AppProperties appProperties = AppUtils.getBean(AppProperties.class);
         nodeServerAddr = appProperties.getNodeServerAddr();
         loginId = appProperties.getLoginId();
@@ -79,7 +98,7 @@ public class NodeServiceUtil {
      * @return
      */
     public static ApiResult<UserToken> getLoginToken(String loginId) {
-        String url = getRequestUrl(URL_GET_LOGIN_TOKEN, loginId);
+        String url = getRequestUrl(varReplace(URL_GET_LOGIN_TOKEN, loginId));
         UserToken userToken = JSON.parseObject(HttpUtil.doGet(url), UserToken.class);
         return ApiResult.success(userToken);
     }
@@ -101,177 +120,78 @@ public class NodeServiceUtil {
         return ApiResult.success(response);
     }
 
-    /**
-     * 获取激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static List<IncentiveManagement> getIncentiveManagement(IncentiveManagement data) {
-        String url = getRequestUrl(URL_GET_INCENTIVE_MANAGEMENT, data.getSchedule_batch_id(), data.getParticipant_id());
-        return JSON.parseArray(HttpUtil.doGet(url), IncentiveManagement.class);
+    public static <T> List getEntity(T data) {
+        if (data != null) {
+            Class<?> clz = data.getClass();
+            String url = getRequestUrl(varReplace(CLASS_API_MAP.get(clz.getName()).apiGet, data));
+            return JSON.parseArray(HttpUtil.doGet(url), clz);
+        }
+        return new ArrayList();
     }
 
-    /**
-     * 获取激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static List<IncentiveManagement> listIncentiveManagement(List<IncentiveManagement> data) {
-        String url = getRequestUrl(URL_GET_MULTIPLE_INCENTIVE_MANAGEMENT, JSON.toJSONString(data));
-        return JSON.parseArray(HttpUtil.doGet(url), IncentiveManagement.class);
+    public static <T> List listEntity(List<T> data) {
+        if (data != null && data.size() > 0) {
+            Class<?> clz = data.get(0).getClass();
+            String url = getRequestUrl(varReplace(CLASS_API_MAP.get(clz.getName()).apiGetMultiple, data));
+            return JSON.parseArray(HttpUtil.doGet(url), clz);
+        }
+        return new ArrayList();
     }
 
-    /**
-     * 添加激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static boolean addIncentiveManagement(IncentiveManagement data) {
-        String url = getRequestUrl(URL_ADD_INCENTIVE_MANAGEMENT);
-        HttpUtil.doPost(url, null, getStringEntity(data));
+    public static <T> boolean addEntity(T data) {
+        if (data != null) {
+            Class clz = data.getClass();
+            String url = getRequestUrl(CLASS_API_MAP.get(clz.getName()).apiAdd);
+            HttpUtil.doPost(url, null, getStringEntity(data));
+        }
         return true;
     }
 
-    /**
-     * 批量添加激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static boolean batchAddIncentiveManagement(List<IncentiveManagement> data) {
-        String url = getRequestUrl(URL_ADD_MULTIPLE_INCENTIVE_MANAGEMENT);
-        HttpUtil.doPost(url, null, getStringEntity(data));
+    public static <T> List<T> batchAddEntity(List<T> data) {
+        if (data != null && data.size() > 0) {
+            Class clz = data.get(0).getClass();
+            String url = getRequestUrl(CLASS_API_MAP.get(clz.getName()).apiAddMultiple);
+            return JSON.parseArray(HttpUtil.doPost(url, null, getStringEntity(data)), clz);
+        }
+        return new ArrayList<>();
+    }
+
+    public static <T> boolean updateEntity(T data) {
+        if (data != null) {
+            Class clz = data.getClass();
+            String url = getRequestUrl(varReplace(CLASS_API_MAP.get(clz.getName()).apiUpdate, data));
+            HttpUtil.doPut(url, null, getStringEntity(data));
+        }
         return true;
     }
 
-    /**
-     * 更新激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean updateIncentiveManagement(IncentiveManagement data) {
-        String url = getRequestUrl(URL_UPDATE_INCENTIVE_MANAGEMENT, data.getSchedule_batch_id(), data.getParticipant_id());
-        HttpUtil.doPut(url, null, getStringEntity(data));
+    public static <T> boolean batchUpdateEntity(List<T> data) {
+        if (data != null && data.size() > 0) {
+            Class clz = data.get(0).getClass();
+            String url = getRequestUrl(CLASS_API_MAP.get(clz.getName()).apiUpdateMultiple);
+            HttpUtil.doPut(url, null, getStringEntity(data));
+        }
         return true;
     }
 
-    /**
-     * 批量更新激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean batchUpdateIncentiveManagement(List<IncentiveManagement> data) {
-        String url = getRequestUrl(URL_UPDATE_MULTIPLE_INCENTIVE_MANAGEMENT);
-        HttpUtil.doPut(url, null, getStringEntity(data));
+    public static <T> boolean deleteEntity(T data) {
+        if (data != null) {
+            Class clz = data.getClass();
+            String url = getRequestUrl(varReplace(CLASS_API_MAP.get(clz.getName()).apiDelete, data));
+            HttpUtil.doDelete(url);
+        }
         return true;
     }
 
-    /**
-     * 删除激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean deleteIncentiveManagement(IncentiveManagement data) {
-        String url = getRequestUrl(URL_DELETE_INCENTIVE_MANAGEMENT, data.getSchedule_batch_id(), data.getParticipant_id());
-        HttpUtil.doDelete(url);
-        return true;
+    public static List<IncentiveSchedule> getAllScheduleGroups(String planId) {
+        String url = getRequestUrl(varReplace(URL_GET_ALL_SCHEDULE_GROUPS, planId));
+        return JSON.parseArray(HttpUtil.doGet(url), IncentiveSchedule.class);
     }
 
-
-
-    /**
-     * 获取 KPI 状态
-     *
-     * @param data
-     * @return
-     */
-    public static List<KpiStatusInfo> getAllKpiStatusInfo(KpiStatusInfo data) {
-        String url = getRequestUrl(URL_GET_ALL_KPI_STATUS, data.getSchedule_batch_id(), data.getParticipant_id());
-        return JSON.parseArray(HttpUtil.doGet(url), KpiStatusInfo.class);
+    public static List<KpiCondition> getAllKpiConditions(String schedule_batch_id) {
+        String url = getRequestUrl(varReplace(URL_GET_ALL_KPI_CONDITIONS, schedule_batch_id));
+        return JSON.parseArray(HttpUtil.doGet(url), KpiCondition.class);
     }
-
-    public static List<KpiStatusInfo> getKpiStatusInfo(KpiStatusInfo data) {
-        String url = getRequestUrl(URL_GET_MULTIPLE_KPI_STATUS, JSON.toJSONString(Collections.singletonList(data)));
-        return JSON.parseArray(HttpUtil.doGet(url), KpiStatusInfo.class);
-    }
-
-    /**
-     * 获取激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static List<KpiStatusInfo> listKpiStatusInfo(List<KpiStatusInfo> data) {
-        String url = getRequestUrl(URL_GET_MULTIPLE_KPI_STATUS, JSON.toJSONString(data));
-        return JSON.parseArray(HttpUtil.doGet(url), KpiStatusInfo.class);
-    }
-
-    /**
-     * 添加激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static boolean addKpiStatusInfo(KpiStatusInfo data) {
-        String url = getRequestUrl(URL_ADD_KPI_STATUS);
-        HttpUtil.doPost(url, null, getStringEntity(data));
-        return true;
-    }
-
-    /**
-     * 批量添加激励管理信息
-     *
-     * @param data
-     * @return
-     */
-    public static boolean batchAddKpiStatusInfo(List<KpiStatusInfo> data) {
-        String url = getRequestUrl(URL_ADD_MULTIPLE_KPI_STATUS);
-        HttpUtil.doPost(url, null, getStringEntity(data));
-        return true;
-    }
-
-    /**
-     * 更新激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean updateKpiStatusInfo(KpiStatusInfo data) {
-        String url = getRequestUrl(URL_UPDATE_KPI_STATUS, data.getSchedule_batch_id(), data.getKpi_no(), data.getParticipant_id());
-        HttpUtil.doPut(url, null, getStringEntity(data));
-        return true;
-    }
-
-    /**
-     * 批量更新激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean batchUpdateKpiStatusInfo(List<KpiStatusInfo> data) {
-        String url = getRequestUrl(URL_UPDATE_MULTIPLE_KPI_STATUS);
-        HttpUtil.doPut(url, null, getStringEntity(data));
-        return true;
-    }
-
-    /**
-     * 删除激励管理
-     *
-     * @param data
-     * @return
-     */
-    public static boolean deleteKpiStatusInfo(KpiStatusInfo data) {
-        String url = getRequestUrl(URL_DELETE_KPI_STATUS, data.getSchedule_batch_id(), data.getKpi_no(), data.getParticipant_id());
-        HttpUtil.doDelete(url);
-        return true;
-    }
-
 
 
     private static StringEntity getStringEntity(Object data) {
@@ -280,17 +200,32 @@ public class NodeServiceUtil {
         return new StringEntity(JSON.toJSONString(body), ContentType.APPLICATION_JSON);
     }
 
+    private static String varReplace(String str, Object... args) {
+        if (str.contains("%s")) {
+            str = String.format(str, args);
+        } else {
+            // url 中 变量替换
+            Matcher m = URL_PATTERN.matcher(str);
+            while (m.find()) {
+                String fieldName = m.group(1);
+                Object value = RefUtil.getFieldValue(args[0], fieldName);
+                if (value == null) {
+                    throw new RuntimeException(fieldName + " value is null");
+                }
+                str = str.replace("{" + fieldName + "}", value.toString());
+            }
+        }
+        return str;
+    }
+
     /**
      * 获取请求 url
      *
      * @param suffix 接口路径
      * @return
      */
-    private static String getRequestUrl(String suffix, Object... args) {
+    private static String getRequestUrl(String suffix) {
         String url = nodeServerAddr + suffix;
-        if (args.length > 0) {
-            url = String.format(url, args);
-        }
         url = url.replace("\"", "%22").replace("{", "%7b").replace("}", "%7d");
         logger.info("request node server: " + url);
         return url;
