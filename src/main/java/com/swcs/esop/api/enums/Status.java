@@ -39,6 +39,8 @@ public enum Status {
 
     INCENTIVE_MANAGEMENT_UPLOAD_ERROR(1100, "Incentive management upload error: {0}", "激励管理上传错误: {0}", "激勵管理上傳錯誤: {0}"),
     INCENTIVE_MANAGEMENT_UPLOAD_DATA_ERROR(1101, "Incentive management upload data error", "激励管理上传数据错误", "激勵管理上傳數據錯誤"),
+    TRUST_TRANSACTIONS_UPLOAD_ERROR(1102, "Trust transactions upload error: {0}", "激励管理上传错误: {0}", "激勵管理上傳錯誤: {0}"),
+    TRUST_TRANSACTIONS_UPLOAD_DATA_ERROR(1103, "Trust transactions upload data error", "激励管理上传数据错误", "激勵管理上傳數據錯誤"),
 
     ;
 

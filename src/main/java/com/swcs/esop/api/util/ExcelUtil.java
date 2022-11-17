@@ -90,11 +90,11 @@ public class ExcelUtil {
 
                 excelWriter.finish();
 
-                return ApiResult.success(Status.INCENTIVE_MANAGEMENT_UPLOAD_DATA_ERROR).setData(fileName);
+                return ApiResult.success(Status.TRUST_TRANSACTIONS_UPLOAD_DATA_ERROR).setData(fileName);
             }
         } catch (Exception e) {
             logger.error("", e);
-            return ApiResult.errorWithArgs(Status.INCENTIVE_MANAGEMENT_UPLOAD_ERROR, e.getMessage());
+            return ApiResult.errorWithArgs(Status.TRUST_TRANSACTIONS_UPLOAD_ERROR, e.getMessage());
         }
     }
 }
