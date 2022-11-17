@@ -107,7 +107,7 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
 
         if (!errorList.isEmpty()) {
             // 设置错误信息
-            o.setError(StringUtils.join(errorList, " | "));
+            o.setStatus(StringUtils.join(errorList, " | "));
             errorNum++;
         } else {
             // 没有错误, 将数据添加到对应集合
@@ -137,9 +137,9 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
             // 添加错误信息
             for (T t : insertList) {
                 if (errorCachedDataMap.containsKey(t.getPrimaryKey())) {
-                    t.setError(getMessage("RECORD_ADD_ERROR") + ": " + t.getStatus());
+                    t.setStatus(getMessage("RECORD_ADD_ERROR") + ": " + t.getStatus());
                 } else {
-                    t.setError(getMessage("SUCCESS"));
+                    t.setStatus(getMessage("SUCCESS"));
                 }
             }
         }
@@ -147,11 +147,11 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
             try {
                 NodeServiceUtil.batchUpdateEntity(updateList);
                 for (T t : updateList) {
-                    t.setError(getMessage("SUCCESS"));
+                    t.setStatus(getMessage("SUCCESS"));
                 }
             } catch (Exception e) {
                 for (T t : updateList) {
-                    t.setError(e.getMessage());
+                    t.setStatus(e.getMessage());
                 }
             }
         }

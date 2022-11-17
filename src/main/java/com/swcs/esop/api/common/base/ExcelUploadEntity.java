@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public abstract class ExcelUploadEntity {
 
-    protected String error;
     protected String status;
 
     public abstract String getPrimaryKey();
