@@ -22,8 +22,8 @@ public class IncentiveManagement extends ExcelUploadEntity {
     private String incentive_status;
     @ExcelCheckField(ExcelCheckEnum.Number)
     private String granted;
-    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty, ExcelCheckEnum.Number})
-    private String total_lapsed;
+    @ExcelCheckField(ExcelCheckEnum.Number)
+    private String total_lapsed = "0";
 
     @Override
     public String getPrimaryKey() {
