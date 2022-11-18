@@ -22,11 +22,13 @@ jobs:
         cache: maven
         
     - name: Build
-      run: ./build.sh
-      working-directory: /home/esopadmin/flyway-9.7.0/
+    - run: chmod +x build.sh
+    - run: chmod +x run_sit.sh
+    - run: ./build.sh
+      working-directory: /home/esopadmin/UAT/gitaction/java_service/actions-runner/_work/esop_server_rule/esop_server_rule
       
     - name: Run 
-      run: ./run_prod.sh
-      
+    - run: ./run_sit.sh
+      working-directory: /home/esopadmin/UAT/gitaction/java_service/actions-runner/_work/esop_server_rule/esop_server_rule
       
       
