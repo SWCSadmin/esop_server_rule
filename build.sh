@@ -1,3 +1,3 @@
 #!/bin/bash
 mvn -DskipTests=true install
-pause
+read -rsp $'Press enter to continue...\n'
