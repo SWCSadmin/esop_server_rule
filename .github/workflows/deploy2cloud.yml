@@ -24,7 +24,6 @@ jobs:
     - run: chmod +x build.sh
     - run: chmod +x run_sit.sh
     - run: ./build.sh
-    - run: ./run_sit.sh
       working-directory: /home/esopadmin/UAT/gitaction/java_service/actions-runner/_work/esop_server_rule/esop_server_rule
-      
+    - run: sudo systemctl restart esop_dev_java_service
       
