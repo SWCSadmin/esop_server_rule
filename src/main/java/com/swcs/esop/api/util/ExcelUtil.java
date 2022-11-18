@@ -18,9 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author 阮程
@@ -38,6 +35,7 @@ public class ExcelUtil {
             ReadSheet readSheet2 = EasyExcel.readSheet(1).head(KpiStatusInfo.class).registerReadListener(kpiStatusInfoReadListener).build();
             // 这里注意 一定要把sheet1 sheet2 一起传进去，不然有个问题就是03版的excel 会读取多次，浪费性能
             excelReader.read(readSheet1, readSheet2);
+            excelReader.close();
 
             if (incentiveManagementReadListener.isSuccess() && kpiStatusInfoReadListener.isSuccess()) {
                 // 都校验成功之后执行最后的步骤
@@ -56,7 +54,7 @@ public class ExcelUtil {
                 WriteSheet writeSheet2 = EasyExcel.writerSheet(1, "kpi_status").head(KpiStatusInfo.class).build();
                 excelWriter.write(kpiStatusInfoReadListener.getCacheList(), writeSheet2);
 
-                excelWriter.finish();
+                excelWriter.close();
 
                 return ApiResult.success(Status.INCENTIVE_MANAGEMENT_UPLOAD_DATA_ERROR).setData(fileName);
             }
@@ -72,6 +70,7 @@ public class ExcelUtil {
             TrustTransactionsReadListener trustTransactionsReadListener = new TrustTransactionsReadListener(upsert, startDate, endDate);
             ReadSheet readSheet1 = EasyExcel.readSheet(0).head(TrustTransactions.class).registerReadListener(trustTransactionsReadListener).build();
             excelReader.read(readSheet1);
+            excelReader.close();
 
             if (trustTransactionsReadListener.isSuccess()) {
                 // 都校验成功之后执行最后的步骤
@@ -88,7 +87,7 @@ public class ExcelUtil {
                 WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "transactions").head(TrustTransactions.class).build();
                 excelWriter.write(trustTransactionsReadListener.getCacheList(), writeSheet1);
 
-                excelWriter.finish();
+                excelWriter.close();
 
                 return ApiResult.success(Status.TRUST_TRANSACTIONS_UPLOAD_DATA_ERROR).setData(fileName);
             }
