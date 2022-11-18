@@ -1,0 +1,13 @@
+Dear  {{recipientName}}
+
+This is in regards to the Staff Plan of the Employee Share Award Scheme as an Incentive Scheme. Your granted incentive shares meet company Granting Limitation, the reason is  this grant results in the increasing by more than 2% from the lowest percentage holding of that person or collectively in the 12 month period ending on and inclusive of the date of the grant  is not allowed, and this limitation notice has been sent to your e-mail by the ESOP system. Please check and reply to the relevant e-mail. Thank you for your attention.
+
+Sincerely,
+Representing the Board of Directors of Hello Marketing Company Limited
+
+
+
+Sender Name: {{senderName}}
+___________________________________
+Contact Detail: {{senderContact}}
+Postion: {{senderJobPosition}}

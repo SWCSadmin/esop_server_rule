@@ -1,0 +1,10 @@
+Dear  {{recipientName}}
+
+{{message}}
+
+
+
+Sender Name: {{senderName}}
+___________________________________
+Contact Detail: {{senderContact}}
+Postion: {{senderJobPosition}}

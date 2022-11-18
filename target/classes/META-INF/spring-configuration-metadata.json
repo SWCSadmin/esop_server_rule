@@ -1,0 +1,66 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "com.swcs.esop.api.config.AppProperties",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "tax",
+      "type": "com.swcs.esop.api.util.TaxRateUtil",
+      "sourceType": "com.swcs.esop.api.util.TaxRateUtil"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.auth",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.swcs.esop.api.config.AppProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "app.login-id",
+      "type": "java.lang.String",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "app.login-pwd",
+      "type": "java.lang.String",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "app.node-server-addr",
+      "type": "java.lang.String",
+      "description": "node 服务地址",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "app.once-file-path",
+      "type": "java.lang.String",
+      "description": "一次性文件路径",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "app.upload-file-path",
+      "type": "java.lang.String",
+      "description": "文件上传路径",
+      "sourceType": "com.swcs.esop.api.config.AppProperties"
+    },
+    {
+      "name": "tax.non-tax-rate",
+      "type": "com.swcs.esop.api.entity.tax.TaxRate[]",
+      "sourceType": "com.swcs.esop.api.util.TaxRateUtil"
+    },
+    {
+      "name": "tax.tax-rate",
+      "type": "com.swcs.esop.api.entity.tax.TaxRate[]",
+      "sourceType": "com.swcs.esop.api.util.TaxRateUtil"
+    },
+    {
+      "name": "tax.unit",
+      "type": "com.swcs.esop.api.enums.TaxRateUnit",
+      "sourceType": "com.swcs.esop.api.util.TaxRateUtil"
+    }
+  ],
+  "hints": []
+}
