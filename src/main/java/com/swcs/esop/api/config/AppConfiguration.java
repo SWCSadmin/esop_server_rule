@@ -48,7 +48,7 @@ public class AppConfiguration implements WebMvcConfigurer {
     public static final Logger logger = LoggerFactory.getLogger(AppConfiguration.class);
 
     public static final String PATH_PATTERN = "/**";
-    public static final String LOGIN_INTERCEPTOR_PATH_PATTERN = "/api/*";
+    public static final String LOGIN_INTERCEPTOR_PATH_PATTERN = "/api/**";
 
     /**
      * 跨域配置
