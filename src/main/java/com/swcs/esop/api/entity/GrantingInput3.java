@@ -36,6 +36,7 @@ public class GrantingInput3 extends GrantingInput {
     private BigDecimal lastAggregatedSharesGranted;
     private BigDecimal lowestPercentage;
     private BigDecimal newlyGranted;
+    private String recipientID;
 
     @Override
     public ApiResult paramsValid() {
@@ -62,7 +63,7 @@ public class GrantingInput3 extends GrantingInput {
         BigDecimal previousPercentage = lastAggregatedSharesGranted.divide(totalIssuedOptions).multiply(new BigDecimal(100));
         BigDecimal newPercentage = lastAggregatedSharesGranted.add(newlyGranted).divide(totalIssuedOptions).multiply(new BigDecimal(100));
         if (newPercentage.doubleValue() > 75.00D) {
-            notificationListedCompany("notify_template/listed_company/2.txt");
+            notificationListedCompany(recipientID,"notify_template/listed_company/2.txt");
         } else {
             if (newPercentage.subtract(lowestPercentage).doubleValue() < 2.00D) {
                 if (previousPercentage.doubleValue() < 30.00D && newPercentage.doubleValue() < 30.00D) {
@@ -71,10 +72,10 @@ public class GrantingInput3 extends GrantingInput {
                 if (previousPercentage.doubleValue() >= 30.00D && previousPercentage.doubleValue() < 50.00D) {
                     return ApiResult.success().setData(newPercentage);
                 } else {
-                    notificationListedCompany("notify_template/listed_company/3.txt");
+                    notificationListedCompany(recipientID,"notify_template/listed_company/3.txt");
                 }
             } else {
-                notificationListedCompany("notify_template/listed_company/4.txt");
+                notificationListedCompany(recipientID,"notify_template/listed_company/4.txt");
             }
         }
         return ApiResult.success().setData(data);

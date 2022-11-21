@@ -43,6 +43,7 @@ public class GrantingInput2 extends GrantingInput {
     private BigDecimal grantedParticipantOptions;
     private BigDecimal aggregatedGrantedOptions;
     private BigDecimal closingPrice;
+    private String recipientID;
 
     @Override
     public ApiResult paramsValid() {
@@ -80,7 +81,7 @@ public class GrantingInput2 extends GrantingInput {
             if (data1.doubleValue() < 0.1D && data2.intValue() < 5000000) {
                 data = grantedParticipantOptions;
             } else {
-                notificationListedCompany("notify_template/listed_company/1.txt");
+                notificationListedCompany(recipientID, "notify_template/listed_company/1.txt");
             }
         } else {
             if (data1.doubleValue() < 1.0D) {

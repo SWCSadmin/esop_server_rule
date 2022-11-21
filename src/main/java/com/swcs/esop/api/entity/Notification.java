@@ -41,7 +41,7 @@ public class Notification {
     /**
      * Message in English or Chinese
      */
-    private String message;
+    private String message = "";
     /**
      * Sender first and last names
      */

@@ -2,8 +2,8 @@ package com.swcs.esop.api.util;
 
 import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson2.JSON;
-import com.swcs.esop.api.common.mvc.ApiResult;
 import com.swcs.esop.api.config.AppProperties;
+import com.swcs.esop.api.common.mvc.ApiResult;
 import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.entity.auth.NodeVerifyTokenResponse;
 import com.swcs.esop.api.entity.auth.User;
@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

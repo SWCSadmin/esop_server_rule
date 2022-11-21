@@ -11,14 +11,12 @@ import com.swcs.esop.api.util.AppUtils;
  */
 public abstract class GrantingInput implements BaseRuleInput {
 
-    protected String recipientID;
-
-    protected void notificationListedCompany(String templatePath) {
+    protected void notificationListedCompany(String recipientId, String templatePath) {
         AsyncTask asyncTask = AppUtils.getBean(AsyncTask.class);
         Notification notification = new Notification();
         notification.setCommunicationType(CommunicationTypeEnum.Email);
         notification.setTopicTitle("Employee Share Award Scheme Notice of Granting Limitation");
-        notification.setRecipientID(recipientID);
+        notification.setRecipientID(recipientId);
         notification.setRecipientName("Participant");
         notification.setSenderContact("gilbert.au@mkt.com");
         notification.setSenderJobPosition("Stock Admin");
