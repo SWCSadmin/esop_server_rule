@@ -1,20 +1,15 @@
 package com.swcs.esop.api.config;
 
 import lombok.Data;
-import org.apache.commons.math3.ml.neuralnet.UpdateAction;
-import org.apache.tomcat.util.http.fileupload.UploadContext;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-import javax.sound.midi.Soundbank;
-import java.io.File;
+import org.springframework.context.annotation.Configuration;
 
 
 /**
  * @author 阮程
  * @date 2022/10/24
  */
-@Component
+@Configuration
 @ConfigurationProperties(prefix = "app")
 @Data
 public class AppProperties {
