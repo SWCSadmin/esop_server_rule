@@ -55,6 +55,10 @@ public class ApiResult<T> {
         return new ApiResult<T>(status).setSuccess(true);
     }
 
+    public static <T> ApiResult<T> successWithArgs(Status status, Object... args) {
+        return new ApiResult<T>(status.getCode(), MessageFormat.format(status.getMsg(), args)).setSuccess(true);
+    }
+
     /**
      * Call this function if there is success
      *

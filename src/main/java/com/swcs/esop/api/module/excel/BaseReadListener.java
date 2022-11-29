@@ -151,6 +151,7 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
                 }
             } catch (Exception e) {
                 for (T t : updateList) {
+                    errorNum++;
                     t.setStatus(e.getMessage());
                 }
             }
@@ -218,6 +219,7 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
             Object value = RefUtil.getFieldValue(o, filed);
             String pattern = filed.getAnnotation(ExcelDateFormat.class).value();
             String original = filed.getAnnotation(ExcelDateFormat.class).original();
+            LocaleEnum locale = filed.getAnnotation(ExcelDateFormat.class).locale();
             if (value != null) {
                 String strValue = null;
                 try {
@@ -246,7 +248,7 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
     protected void beforeInvoke(T o) {
     }
 
-    private Class<T> getGenericClassT() {
+    public Class<T> getGenericClassT() {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -254,4 +256,5 @@ public abstract class BaseReadListener<T extends ExcelUploadEntity> implements R
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage(code, new Object[]{}, locale);
     }
+
 }

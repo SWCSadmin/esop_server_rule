@@ -35,13 +35,8 @@ public enum Status {
 
     NOTIFY_ERROR(1000, "Notification service error", "通知服务异常", "通知服務異常"),
 
-    TAX_CALCULATION_NOT_APPLICABLE(1000, "Not applicable as his tax residence is Hong Kong solely.", "不适用，因为其税务居所仅为香港。", "不適用，因為其稅務居所僅為香港。"),
-
-    INCENTIVE_MANAGEMENT_UPLOAD_ERROR(1100, "Incentive management upload error: {0}", "激励管理上传错误: {0}", "激勵管理上傳錯誤: {0}"),
-    INCENTIVE_MANAGEMENT_UPLOAD_DATA_ERROR(1101, "Incentive management upload data error", "激励管理上传数据错误", "激勵管理上傳數據錯誤"),
-    TRUST_TRANSACTIONS_UPLOAD_ERROR(1102, "Trust transactions upload error: {0}", "激励管理上传错误: {0}", "激勵管理上傳錯誤: {0}"),
-    TRUST_TRANSACTIONS_UPLOAD_DATA_ERROR(1103, "Trust transactions upload data error", "激励管理上传数据错误", "激勵管理上傳數據錯誤"),
-
+    UPLOAD_ERROR(1100, "upload error: {0}", "上传错误: {0}", "上傳錯誤: {0}"),
+    UPLOAD_DATA_ERROR(1101, "upload data error", "上传数据错误", "上傳數據錯誤"),
     ;
 
 

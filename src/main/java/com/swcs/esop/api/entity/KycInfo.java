@@ -1,6 +1,7 @@
 package com.swcs.esop.api.entity;
 
 import com.swcs.esop.api.common.base.ExcelUploadEntity;
+import com.swcs.esop.api.module.excel.ExcelCheckEnum;
 import com.swcs.esop.api.module.excel.annotion.ExcelCheckField;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class KycInfo extends ExcelUploadEntity {
 
-    @ExcelCheckField
+    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty})
     private String schedule_batch_id;
     private String total_watch_count;
     private String total_suspended_count;

@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ExcelCheckField {
 
-    ExcelCheckEnum[] value() default {};
+    ExcelCheckEnum[] value();
 
     String re() default "";
 

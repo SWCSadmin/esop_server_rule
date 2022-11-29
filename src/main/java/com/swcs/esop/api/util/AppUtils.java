@@ -46,6 +46,7 @@ public class AppUtils implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    	logger.info("========applicationContext="+applicationContext);
         AppUtils.applicationContext = applicationContext;
     }
 
@@ -74,7 +75,9 @@ public class AppUtils implements ApplicationContextAware {
         try {
             return getApplicationContext().getBean(clazz);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+			logger.info("=====getApplicationContext()=="+getApplicationContext()+", clazz="+clazz.getName());
+			e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
         return newInstance(clazz);
     }

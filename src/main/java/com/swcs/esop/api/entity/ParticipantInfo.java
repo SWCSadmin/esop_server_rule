@@ -1,11 +1,11 @@
 package com.swcs.esop.api.entity;
 
 import com.swcs.esop.api.common.base.ExcelUploadEntity;
+import com.swcs.esop.api.module.excel.ExcelCheckEnum;
 import com.swcs.esop.api.module.excel.annotion.ExcelCheckField;
+import com.swcs.esop.api.module.excel.annotion.ExcelDateFormat;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Date;
 
 /**
  * @author 阮程
@@ -13,20 +13,21 @@ import java.util.Date;
  */
 @Data
 public class ParticipantInfo extends ExcelUploadEntity {
-
-    @ExcelCheckField
+    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty})
     private String participant_id;
-    @ExcelCheckField
-    private String company_id;
-    @ExcelCheckField
-    private String login_id;
     private String hk_id;
     private String passport_id;
     private String nationality;
     private String tax_residence;
-    private Date employ_date;
-    private Date depart_date;
-    private Date mortality_date;
+    @ExcelCheckField(value = {ExcelCheckEnum.Date})
+    @ExcelDateFormat(value = "yyyy-MM-dd", original = "d-MMM-yy")
+    private String employ_date;
+    @ExcelCheckField(value = {ExcelCheckEnum.Date})
+    @ExcelDateFormat(value = "yyyy-MM-dd", original = "d-MMM-yy")
+    private String depart_date;
+    @ExcelCheckField(value = {ExcelCheckEnum.Date})
+    @ExcelDateFormat(value = "yyyy-MM-dd", original = "d-MMM-yy")
+    private String mortality_date;
     private String prefer_name_en;
     private String prefer_name_sc;
     private String prefer_name_tc;
@@ -45,6 +46,10 @@ public class ParticipantInfo extends ExcelUploadEntity {
     private String wechat;
     private String whatsapp;
     private String job_position_en;
+    private String job_position_sc;
+    private String job_position_tc;
+    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty})
+    private String company_id;
     private String hk_id_country;
     private String passport_country;
     private String prc_id;
@@ -58,12 +63,13 @@ public class ParticipantInfo extends ExcelUploadEntity {
     private String prc_gov_approval;
     private String gender_type;
     private String avatar_type;
-    private String job_position_sc;
-    private String job_position_tc;
     private String dob;
     private String participant_status;
     private String kyc_status;
     private String kyc_risk_level;
+    private String department_en;
+    private String department_sc;
+    private String department_tc;
 
     @Override
     public String getPrimaryKey() {

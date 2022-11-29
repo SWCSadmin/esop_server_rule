@@ -128,6 +128,11 @@ public class ApiController extends BaseController {
         return ExcelUtil.parseTrustTransactions(file, upsert, startDate, endDate);
     }
 
+    @PostMapping("/participantInfo/upload")
+    public ApiResult participantInfoUpload(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert) {
+        return ExcelUtil.parseParticipantInfo(file, upsert);
+    }
+
     /**
      * Cash non-cash payment services from ESOP system - at each participant level
      */
@@ -224,8 +229,8 @@ public class ApiController extends BaseController {
         }
     }
 
-    @GetMapping("/blackout")
-    public ApiResult blackout(BlackoutPeriodsInput blackoutPeriodsInput) {
+    @PostMapping("/blackout")
+    public ApiResult blackout(@RequestBody BlackoutPeriodsInput blackoutPeriodsInput) {
         return blackoutPeriodsInput.calculation();
     }
 }

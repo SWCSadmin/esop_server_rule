@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
  * @author 阮程
  * @date 2022/10/24
  */
-@Component
 public class NodeServiceUtil {
 
     public static final Logger logger = LoggerFactory.getLogger(NodeServiceUtil.class);
@@ -67,11 +66,11 @@ public class NodeServiceUtil {
         // participantinfo 接口
         CLASS_API_MAP.put(ParticipantInfo.class.getName(), new NodeApiMap(
                 "/get/participantinfo/{participant_id}",
-                null,
                 "/add/participantinfo",
-                null,
+                "/add/participantinfo",
+                "/add/multiple/participant_info/return/unsuccess",
                 "/update/participantinfo/{participant_id}",
-                null,
+                "/update/multiple/participant_info",
                 "/delete/participantinfo/{participant_id}"
         ));
         // trust_transactions 接口
