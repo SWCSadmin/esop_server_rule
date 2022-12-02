@@ -105,10 +105,10 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
     public ApiResult ruleCalculation() {
         if (AnnouncementType.Publication.equals(announcementType)) {
             if (StockExchange.HKEX.equals(stockExchange)) {
-                if (BlackoutPeriodType.Annual.equals(stockExchange)) {
+                if (BlackoutPeriodType.Annual.equals(blackoutPeriodType)) {
                     duration = 90;
                     blackout = 60;
-                } else if (BlackoutPeriodType.Interim.equals(stockExchange)) {
+                } else if (BlackoutPeriodType.Interim.equals(blackoutPeriodType)) {
                     duration = 60;
                     blackout = 30;
                 } else {
@@ -116,10 +116,10 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
                     blackout = 30;
                 }
             } else if (StockExchange.SSE.equals(stockExchange)) {
-                if (BlackoutPeriodType.Annual.equals(stockExchange)) {
+                if (BlackoutPeriodType.Annual.equals(blackoutPeriodType)) {
                     duration = 120;
                     blackout = 30;
-                } else if (BlackoutPeriodType.Interim.equals(stockExchange)) {
+                } else if (BlackoutPeriodType.Interim.equals(blackoutPeriodType)) {
                     duration = 60;
                     blackout = 30;
                 } else {
@@ -127,10 +127,10 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
                     blackout = 30;
                 }
             } else {
-                if (BlackoutPeriodType.Annual.equals(stockExchange)) {
+                if (BlackoutPeriodType.Annual.equals(blackoutPeriodType)) {
                     duration = 90;
                     blackout = 60;
-                } else if (BlackoutPeriodType.Interim.equals(stockExchange)) {
+                } else if (BlackoutPeriodType.Interim.equals(blackoutPeriodType)) {
                     duration = 60;
                     blackout = 30;
                 } else {
