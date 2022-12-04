@@ -18,7 +18,7 @@ import java.util.Date;
  * 2. Blackout period type is either Annual, Interim or Quarterly (Blackout Period Type)
  * 3. Result publication type (i.e. Publication, Advance, Warning) (Announcement Type)
  * 3. Financial Year End (FYE) or Half-year end (HYE) or Quarter end (QE) (Finance End Date)
- * 4. Start date for next Financial Quarter (Next Financial Start Date)
+ * 4. End date for next Financial Quarter (Next Financial End Date)
  * 4. Date on publishing the company result (Publication Date)
  * 5. Notice period to notify HKEX/SSE and/or directors and senior management. Default is 1 day (Notice Period)
  *
@@ -71,7 +71,7 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
     private BlackoutPeriodType blackoutPeriodType;
     private AnnouncementType announcementType;
     private Date financeEndDate;
-    private Date nextFinancialStartDate;
+    private Date nextFinancialEndDate;
     private Date publicationDate;
     private Integer noticePeriod = 1;
 
@@ -92,8 +92,8 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
         if (financeEndDate == null) {
             return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "financeEndDate");
         }
-        if (nextFinancialStartDate == null) {
-            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "nextFinancialStartDate");
+        if (nextFinancialEndDate == null) {
+            return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "nextFinancialEndDate");
         }
         if (publicationDate == null) {
             return ApiResult.errorWithArgs(Status.MISSING_REQUIRED_PARAMS_ERROR, "publicationDate");
@@ -153,8 +153,8 @@ public class BlackoutPeriodsInput implements BaseRuleInput {
         Date deadlineDate = addDays(financeEndDate, duration);
         Date blackoutEndDate = new Date(publicationDate.getTime());
 
-        if (deadlineDate.getTime() > nextFinancialStartDate.getTime()) {
-            deadlineDate = new Date(nextFinancialStartDate.getTime());
+        if (deadlineDate.getTime() > nextFinancialEndDate.getTime()) {
+            deadlineDate = new Date(nextFinancialEndDate.getTime());
         }
         Date blackoutStartDate = getLaterDate(addDays(financeEndDate, 1), addDays(publicationDate, -blackout));
         Date noticeDate = addDays(blackoutStartDate, noticePeriod);
