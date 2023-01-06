@@ -1,0 +1,4 @@
+This is in regards to the {{plan_type}} of the Employee Share Option Plan  as an Incentive Scheme (i.e.  {{plan_name}} - {{plan_id}}) implemented by {{listed_company}} on {{plan_start_date}} and you can exercise them on {{exercised_date}}. You can vest the granted incentive shares from the company, and this vest notice has been sent to your e-mail by the ESOP system. Please check and reply to the relevant e-mail. Thank you for your attention.
+
+Sincerely,
+Representing the Board of Directors of {{listed_company}}

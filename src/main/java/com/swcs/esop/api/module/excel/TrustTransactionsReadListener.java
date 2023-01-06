@@ -16,14 +16,14 @@ public class TrustTransactionsReadListener extends BaseReadListener<TrustTransac
     private String endDate;
 
     public TrustTransactionsReadListener(boolean upsert, String startDate, String endDate) {
-        super(upsert);
+        super(upsert, "transactions");
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
     @Override
-    protected void beforeInvoke(TrustTransactions o) {
-        super.beforeInvoke(o);
+    protected void beforeInvoke(TrustTransactions o, List<String> errorList) {
+        super.beforeInvoke(o, errorList);
         o.setStartDate(this.startDate);
         o.setEndDate(this.endDate);
         o.setTransaction_id(o.getPrimaryKey());

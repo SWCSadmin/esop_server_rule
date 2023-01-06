@@ -27,14 +27,6 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
     @Autowired
     private AppProperties appProperties;
 
-    /**
-     * Intercept the execution of a handler. Called after HandlerMapping determined
-     *
-     * @param request  current HTTP request
-     * @param response current HTTP response
-     * @param handler  chosen handler to execute, for type and/or instance evaluation
-     * @return boolean true or false
-     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (!appProperties.isAuth()) {

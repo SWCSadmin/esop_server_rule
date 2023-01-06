@@ -1,7 +1,7 @@
 package com.swcs.esop.api.module.excel;
 
 import com.swcs.esop.api.entity.IncentiveManagement;
-import com.swcs.esop.api.entity.IncentiveSchedule;
+import com.swcs.esop.api.entity.ScheduleGroup;
 import com.swcs.esop.api.entity.ParticipantInfo;
 import com.swcs.esop.api.util.NodeServiceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +21,10 @@ public class IncentiveManagementReadListener extends BaseReadListener<IncentiveM
     private List<String> scheduleBatchIds = new ArrayList<>();
 
     public IncentiveManagementReadListener(boolean upsert, String planId) {
-        super(upsert);
+        super(upsert, "grant");
         this.planId = planId;
 
-        for (IncentiveSchedule incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
+        for (ScheduleGroup incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
             scheduleBatchIds.add(incentiveSchedule.getSchedule_batch_id());
         }
     }

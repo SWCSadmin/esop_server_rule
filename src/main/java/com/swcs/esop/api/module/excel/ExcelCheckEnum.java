@@ -8,7 +8,6 @@ public enum ExcelCheckEnum {
 
     NotEmpty,
     Number,
-    Double,
-    Date
+    Double
 
 }

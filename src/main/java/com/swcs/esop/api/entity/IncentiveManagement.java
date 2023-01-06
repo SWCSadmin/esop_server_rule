@@ -1,8 +1,10 @@
 package com.swcs.esop.api.entity;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.swcs.esop.api.common.base.ExcelUploadEntity;
 import com.swcs.esop.api.module.excel.ExcelCheckEnum;
 import com.swcs.esop.api.module.excel.annotion.ExcelCheckField;
+import com.swcs.esop.api.module.excel.annotion.ExcelDbUpdateField;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +26,43 @@ public class IncentiveManagement extends ExcelUploadEntity {
     private String granted;
     @ExcelCheckField(ExcelCheckEnum.Number)
     private String total_lapsed = "0";
+
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String vested;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String total_exercised;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String withholding_tax_vested;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String withholding_tax_exercised;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String withholding_tax_sell;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String tax_residence;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String original_share_price;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String exercised_close_price;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String exercised_sell_price;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String granted_pct;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String lowest_pct;
+    @ExcelIgnore
+    @ExcelDbUpdateField
+    private String calculated_pct_date;
 
     @Override
     public String getPrimaryKey() {

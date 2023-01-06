@@ -9,12 +9,14 @@ public enum IncentiveStatus {
     PendingGrantApproval​,
     FailedKYC​,
     GrantApproved​,
+    GrantEmailOffered​,
     GrantFailedKYC​,
     GrantLapsed​,
     GrantAccepted​,
     GrantRejected​,
     GrantFailedKPI​,
     Granted​,
+    VestEmailOffered,
     VestFailedPayment​,
     VestFailedKYC​,
     VestRejected​,
@@ -27,40 +29,6 @@ public enum IncentiveStatus {
     ExercisedCustodian​,
     Cancelled​;
 
-
-    public ESOPStatus getESOPStatus() {
-        switch (this) {
-            case Incomplete​:
-            case PendingGrantApproval​:
-            case FailedKYC​:
-                return ESOPStatus.NA;
-            case GrantApproved​:
-            case GrantFailedKYC​:
-            case GrantLapsed​:
-            case GrantAccepted​:
-            case GrantRejected​:
-            case GrantFailedKPI​:
-            case Granted​:
-                return ESOPStatus.Grant;
-            case VestFailedPayment​:
-            case VestFailedKYC​:
-            case VestRejected​:
-            case VestAccepted​:
-            case Vested​:
-            case VestedCustodian​:
-                return ESOPStatus.Vest;
-            case ExerciseLapsed​:
-            case ExerciseFailedPayment​:
-            case Exercised​:
-            case ExercisedCustodian​:
-                return ESOPStatus.Exercise;
-            case Cancelled​:
-                return ESOPStatus.Cancelled;
-            default:
-                return null;
-        }
-    }
-
     public boolean isContributionOrCostsRequired() {
         switch (this) {
             case VestFailedPayment​:
@@ -70,4 +38,57 @@ public enum IncentiveStatus {
                 return false;
         }
     }
+
+    public static IncentiveStatus typeOf(int c) {
+        IncentiveStatus[] arr = IncentiveStatus.values();
+        for (int i = 0; i < arr.length; i++) {
+            if (c == i + 1) {
+                return arr[i];
+            }
+        }
+        return null;
+    }
+
+    public int intValue() {
+        return this.ordinal() + 1;
+    }
+
+    public ESOPState getESOPStae() {
+        ESOPState esopState = null;
+        switch (this) {
+            case Incomplete​:
+            case PendingGrantApproval​:
+            case FailedKYC​:
+                esopState = ESOPState.NA;
+                break;
+            case GrantApproved​:
+            case GrantFailedKYC​:
+            case GrantLapsed​:
+            case GrantAccepted​:
+            case GrantRejected​:
+            case GrantFailedKPI​:
+            case Granted​:
+                esopState = ESOPState.Grant;
+                break;
+            case VestFailedPayment​:
+            case VestFailedKYC​:
+            case VestRejected​:
+            case VestAccepted​:
+            case Vested​:
+            case VestedCustodian​:
+                esopState = ESOPState.Vest;
+                break;
+            case ExerciseLapsed​:
+            case ExerciseFailedPayment​:
+            case Exercised​:
+            case ExercisedCustodian​:
+                esopState = ESOPState.Exercise;
+                break;
+            case Cancelled​:
+                esopState = ESOPState.Cancelled;
+                break;
+        }
+        return esopState;
+    }
+
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "kyc trigger",
+    "cron": "0 * * * * *",
+    "javaBean": "com.swcs.esop.api.module.trigger.task.KycTrigger",
+    "enable": false,
+    "props": {
+      "email": "410093793@qq.com",
+      "password": "Esop1234"
+    }
+  },
+  {
+    "name": "incentive status trigger",
+    "cron": "0 * * * * *",
+    "javaBean": "com.swcs.esop.api.module.trigger.task.IncentiveStatusTrigger",
+    "enable": false,
+    "props": {
+    }
+  }
+]

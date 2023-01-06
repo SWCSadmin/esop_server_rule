@@ -1,11 +1,14 @@
 package com.swcs.esop.api.util;
 
+import com.swcs.esop.api.entity.Notification;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.ClassRelativeResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,7 +16,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <h1>Spring 工具类</h1>
@@ -46,7 +52,7 @@ public class AppUtils implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    	logger.info("========applicationContext="+applicationContext);
+        logger.info("========applicationContext=" + applicationContext);
         AppUtils.applicationContext = applicationContext;
     }
 
@@ -75,9 +81,9 @@ public class AppUtils implements ApplicationContextAware {
         try {
             return getApplicationContext().getBean(clazz);
         } catch (Exception e) {
-			logger.info("=====getApplicationContext()=="+getApplicationContext()+", clazz="+clazz.getName());
-			e.printStackTrace();
-            logger.error(e.getMessage(),e);
+            logger.info("=====getApplicationContext()==" + getApplicationContext() + ", clazz=" + clazz.getName());
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return newInstance(clazz);
     }
@@ -137,7 +143,7 @@ public class AppUtils implements ApplicationContextAware {
 
     /**
      * 获取当前 request 对象
-     *
+     * <p>
      * 注意事项:
      * 1.在异步线程中会触发异常
      *
@@ -146,11 +152,19 @@ public class AppUtils implements ApplicationContextAware {
     public static HttpServletRequest getRequest() {
         try {
             RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-            HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
             return request;
         } catch (IllegalStateException e) {
             return null;
         }
     }
 
+    public static String getResource(String filePath) throws IOException {
+        return IOUtils.toString(getResourceAsStream(filePath), StandardCharsets.UTF_8);
+    }
+
+    public static InputStream getResourceAsStream(String filePath) throws IOException {
+        filePath = "classpath:" + filePath;
+        return new ClassRelativeResourceLoader(AppUtils.class).getResource(filePath).getInputStream();
+    }
 }

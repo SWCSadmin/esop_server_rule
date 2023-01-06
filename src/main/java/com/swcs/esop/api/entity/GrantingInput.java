@@ -1,5 +1,6 @@
 package com.swcs.esop.api.entity;
 
+import com.swcs.esop.api.common.Constants;
 import com.swcs.esop.api.common.base.BaseRuleInput;
 import com.swcs.esop.api.config.async.AsyncTask;
 import com.swcs.esop.api.enums.CommunicationTypeEnum;
@@ -18,9 +19,9 @@ public abstract class GrantingInput implements BaseRuleInput {
         notification.setTopicTitle("Employee Share Award Scheme Notice of Granting Limitation");
         notification.setRecipientID(recipientId);
         notification.setRecipientName("Participant");
-        notification.setSenderContact("gilbert.au@mkt.com");
-        notification.setSenderJobPosition("Stock Admin");
-        notification.setSenderName("Stock Admin");
+        notification.setSenderContact(Constants.EMAIL_DEFAULT_SENDER_CONTACT);
+        notification.setSenderJobPosition(Constants.EMAIL_DEFAULT_SENDER_JOB_POSITION);
+        notification.setSenderName(Constants.EMAIL_DEFAULT_SENDER_NAME);
         notification.setMessage(notification.loadTemplate(templatePath));
         asyncTask.notify(notification);
     }

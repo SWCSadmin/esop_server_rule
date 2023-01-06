@@ -29,5 +29,9 @@ public class AppProperties {
      * 一次性文件路径
      */
     private String onceFilePath;
+    /**
+     * 定时任务配置文件路径
+     */
+    private String triggerFilePath;
 
 }

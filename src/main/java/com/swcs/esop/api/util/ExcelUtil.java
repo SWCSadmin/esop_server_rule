@@ -6,7 +6,6 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.swcs.esop.api.common.mvc.ApiResult;
-import com.swcs.esop.api.entity.IncentiveManagement;
 import com.swcs.esop.api.enums.Status;
 import com.swcs.esop.api.module.excel.*;
 import org.slf4j.Logger;
@@ -36,8 +35,33 @@ public class ExcelUtil {
     }
 
     public static ApiResult parseParticipantInfo(MultipartFile file, boolean upsert) {
-        ParticipantInfoReadListener participantInfoReadListener = new ParticipantInfoReadListener(upsert);
+        ParticipantInfoIndividualReadListener participantInfoReadListener = new ParticipantInfoIndividualReadListener(upsert);
         return parseExcel(file, participantInfoReadListener);
+    }
+
+    public static ApiResult parseParticipantInfoForIndividual(MultipartFile file, boolean upsert) {
+        ParticipantInfoIndividualReadListener participantInfoReadListener = new ParticipantInfoIndividualReadListener(upsert);
+        ContactPersonIndividualReadListener contactPersonReadListener = new ContactPersonIndividualReadListener(upsert, participantInfoReadListener);
+        return parseExcel(file, participantInfoReadListener, contactPersonReadListener);
+    }
+
+    public static ApiResult parseParticipantInfoForVendor(MultipartFile file, boolean upsert) {
+        VendorInfoReadListener vendorInfoReadListener = new VendorInfoReadListener(upsert);
+        ParticipantInfoVendorReadListener participantInfoReadListener = new ParticipantInfoVendorReadListener(upsert);
+        ContactPersonVendorReadListener contactPersonReadListener = new ContactPersonVendorReadListener(upsert, participantInfoReadListener);
+        return parseExcel(file, vendorInfoReadListener, participantInfoReadListener, contactPersonReadListener);
+    }
+
+    public static ApiResult parseKycForIndividual(MultipartFile file) {
+        KycParticipantInfoReadListener kycParticipantInfoIndividualReadListener = new KycParticipantInfoReadListener();
+        return parseExcel(file, kycParticipantInfoIndividualReadListener);
+    }
+
+    public static ApiResult parseKycForCorporate(MultipartFile file) {
+        KycVendorInfoReadListener vendorInfoReadListener = new KycVendorInfoReadListener();
+        KycParticipantInfoReadListener kycParticipantInfoVendorReadListener = new KycParticipantInfoReadListener();
+//        KycContactPersonVendorReadListener kycContactPersonVendorReadListener = new KycContactPersonVendorReadListener(kycParticipantInfoVendorReadListener);
+        return parseExcel(file, vendorInfoReadListener, kycParticipantInfoVendorReadListener);
     }
 
     private static ApiResult parseExcel(MultipartFile file, BaseReadListener... listeners) {
@@ -64,7 +88,7 @@ public class ExcelUtil {
                     String fullFilePath = filePath + File.separator + fileName;
                     ExcelWriter excelWriter = EasyExcel.write(fullFilePath).build();
                     for (int i = 0; i < listeners.length; i++) {
-                        WriteSheet writeSheet = EasyExcel.writerSheet(i, readSheets.get(i).getSheetName()).head(listeners[i].getGenericClassT()).build();
+                        WriteSheet writeSheet = EasyExcel.writerSheet(i, listeners[i].getSheetName()).head(listeners[i].getGenericClassT()).build();
                         excelWriter.write(listeners[i].getCacheList(), writeSheet);
                     }
                     excelWriter.close();
@@ -77,5 +101,4 @@ public class ExcelUtil {
             return ApiResult.errorWithArgs(Status.UPLOAD_ERROR, e.getMessage());
         }
     }
-
 }

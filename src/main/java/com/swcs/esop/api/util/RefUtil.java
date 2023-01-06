@@ -6,21 +6,16 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RefUtil {
     static Logger logger = LoggerFactory.getLogger(RefUtil.class);
 
     public static <T> boolean hasField(T record, String fieldName) {
         Class<?> clazz = record.getClass();
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            if (field != null) {
-                return true;
-            }
-        } catch (NoSuchFieldException e) {
-        } catch (Exception e) {
-        }
-        return false;
+        return hasField(clazz, fieldName);
     }
 
     public static <T> boolean hasField(Class<?> clazz, String fieldName) {
@@ -29,23 +24,11 @@ public class RefUtil {
             if (field != null) {
                 return true;
             }
-        } catch (NoSuchFieldException e) {
         } catch (Exception e) {
         }
-        return false;
-    }
-
-    public static <T> boolean setField(T record, String fieldName, Object value) {
-        Class<?> clazz = record.getClass();
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            if (field != null) {
-                field.setAccessible(true);
-                field.set(record, value);
-                return true;
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        Class superClz = clazz.getSuperclass();
+        if (superClz != null) {
+            return hasField(superClz, fieldName);
         }
         return false;
     }
@@ -74,4 +57,14 @@ public class RefUtil {
         }
     }
 
+    public static List<Field> listFields(Class clz) {
+        List<Field> list = new ArrayList<>();
+        Field[] fields = clz.getDeclaredFields();
+        list.addAll(Arrays.asList(fields));
+        Class superClz = clz.getSuperclass();
+        if (superClz != null) {
+            list.addAll(listFields(superClz));
+        }
+        return list;
+    }
 }

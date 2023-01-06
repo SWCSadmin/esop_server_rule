@@ -1,26 +1,32 @@
 package com.swcs.esop.api.web.controller;
 
+import com.swcs.esop.api.common.Constants;
 import com.swcs.esop.api.common.base.BaseController;
 import com.swcs.esop.api.common.mvc.ApiResult;
 import com.swcs.esop.api.config.async.AsyncTask;
 import com.swcs.esop.api.entity.*;
+import com.swcs.esop.api.entity.db.IncentiveSchedule;
+import com.swcs.esop.api.entity.db.PlanInfo;
 import com.swcs.esop.api.entity.tax.RSUTaxRateInput;
 import com.swcs.esop.api.entity.tax.SASTaxRateInput;
 import com.swcs.esop.api.entity.tax.SOSTaxRateInput;
+import com.swcs.esop.api.enums.ESOPState;
+import com.swcs.esop.api.enums.IncentiveStatus;
 import com.swcs.esop.api.enums.Status;
 import com.swcs.esop.api.util.AppUtils;
 import com.swcs.esop.api.util.ExcelUtil;
+import com.swcs.esop.api.util.NodeServiceUtil;
+import com.swcs.esop.api.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Future;
 
@@ -45,7 +51,7 @@ public class ApiController extends BaseController {
      */
     @RequestMapping("/setLang/{lang}")
     public ApiResult setLang(@PathVariable("lang") String lang) {
-        LocaleContextHolder.setLocale(StringUtils.parseLocale(lang));
+        LocaleContextHolder.setLocale(org.springframework.util.StringUtils.parseLocale(lang));
         return ApiResult.success();
     }
 
@@ -59,6 +65,12 @@ public class ApiController extends BaseController {
     public ApiResult message(@PathVariable("code") String code) {
         Locale locale = LocaleContextHolder.getLocale();
         return ApiResult.success(messageSource.getMessage(code.toUpperCase(), new Object[]{}, locale));
+    }
+
+    @GetMapping("/notify/message/{scheduler_batch_id}/{participant_id}")
+    public ApiResult notifyMessageById(@PathVariable("scheduler_batch_id") String scheduler_batch_id
+            , @PathVariable("participant_id") String participant_id) {
+        return Notification.getMessageTemplate(scheduler_batch_id, participant_id);
     }
 
     /**
@@ -128,9 +140,25 @@ public class ApiController extends BaseController {
         return ExcelUtil.parseTrustTransactions(file, upsert, startDate, endDate);
     }
 
-    @PostMapping("/participantInfo/upload")
-    public ApiResult participantInfoUpload(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert) {
-        return ExcelUtil.parseParticipantInfo(file, upsert);
+    @PostMapping("/participantInfo/vendor/upload")
+    public ApiResult participantInfoUploadForVendor(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert) {
+        return ExcelUtil.parseParticipantInfoForVendor(file, upsert);
+    }
+
+    @PostMapping("/participantInfo/individual/upload")
+    public ApiResult participantInfoUploadForIndividual(@RequestParam("file") MultipartFile file, @RequestParam(value = "upsert") boolean upsert) {
+        return ExcelUtil.parseParticipantInfoForIndividual(file, upsert);
+    }
+
+    @PostMapping("/kyc/individual/upload")
+    public ApiResult kycUploadForIndividual(@RequestParam("file") MultipartFile file) {
+        return ExcelUtil.parseKycForIndividual(file);
+
+    }
+
+    @PostMapping("/kyc/corporate/upload")
+    public ApiResult kycUploadForCorporate(@RequestParam("file") MultipartFile file) {
+        return ExcelUtil.parseKycForCorporate(file);
     }
 
     /**
@@ -223,7 +251,6 @@ public class ApiController extends BaseController {
                 if (fis != null) {
                     fis.close();
                 }
-                // TODO: 待定
 //                file.delete();
             }
         }
@@ -232,5 +259,10 @@ public class ApiController extends BaseController {
     @PostMapping("/blackout")
     public ApiResult blackout(@RequestBody BlackoutPeriodsInput blackoutPeriodsInput) {
         return blackoutPeriodsInput.calculation();
+    }
+
+    @PostMapping("/kyc")
+    public ApiResult kyc(@RequestBody KycInput kycInput) {
+        return kycInput.calculation();
     }
 }

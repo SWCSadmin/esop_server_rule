@@ -1,6 +1,6 @@
 package com.swcs.esop.api.module.excel;
 
-import com.swcs.esop.api.entity.IncentiveSchedule;
+import com.swcs.esop.api.entity.ScheduleGroup;
 import com.swcs.esop.api.entity.KpiStatusInfo;
 import com.swcs.esop.api.entity.ParticipantInfo;
 import com.swcs.esop.api.util.NodeServiceUtil;
@@ -19,10 +19,10 @@ public class KpiStatusInfoReadListener extends BaseReadListener<KpiStatusInfo> {
     private List<String> scheduleBatchIds = new ArrayList<>();
 
     public KpiStatusInfoReadListener(boolean upsert, String planId) {
-        super(upsert);
+        super(upsert, "kpi_status");
         this.planId = planId;
 
-        for (IncentiveSchedule incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
+        for (ScheduleGroup incentiveSchedule : NodeServiceUtil.getAllScheduleGroups(planId)) {
             scheduleBatchIds.add(incentiveSchedule.getSchedule_batch_id());
         }
     }

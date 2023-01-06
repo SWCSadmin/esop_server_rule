@@ -1,0 +1,4 @@
+This is in regards to the {{plan_type}} of the Employee Share Option Plan  as an Incentive Scheme (i.e.  {{plan_name}} - {{plan_id}}) implemented by {{listed_company}} on {{plan_start_date}} and was offered to you on {{granted_date}}. You have been granted the incentive shares by the company, and this grant notice has been sent to your e-mail by the ESOP system. Please check and reply to the relevant e-mail. Thank you for your attention.
+
+Sincerely,
+Representing the Board of Directors of {{listed_company}}

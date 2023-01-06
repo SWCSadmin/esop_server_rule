@@ -27,7 +27,11 @@ public enum Status {
     SUCCESS(0, "success", "成功", "成功"),
 
     MISSING_REQUIRED_PARAMS_ERROR(100, "Missing required params: {0}", "缺少必填参数: {0}", "缺少必填參數: {0}"),
+    ILLEGAL_INPUT_PARAMS(101, "Illegal input parameter: {0}", "非法输入参数: {0}", "非法輸入參數: {0}"),
     FILE_NOT_EXIST_ERROR(200, "File not exists", "文件不存在", "檔案不存在"),
+    RECORD_NOT_EXIST_ERROR(201, "Record not exists", "记录不存在", "記錄不存在"),
+    GET_NOTIFY_MESSAGE_ERROR(202, "Get notify message error: {0}", "获取通知消息错误: {0}", "獲取通知消息錯誤: {0}"),
+
 
     INTERNAL_SERVER_ERROR_ARGS(500, "Internal server error: {0}", "服务端异常: {0}", "服務端異常:{0}"),
 

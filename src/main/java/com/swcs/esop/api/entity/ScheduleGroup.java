@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2022/11/14
  */
 @Data
-public class IncentiveSchedule {
+public class ScheduleGroup {
 
     private String schedule_batch_id;
     private String schedule_group_id;

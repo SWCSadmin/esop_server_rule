@@ -122,6 +122,17 @@ public class ApiResult<T> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("ApiResult{");
+        sb.append("success=").append(success);
+        sb.append(", code=").append(code);
+        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
+
     public static void responseResult(HttpServletResponse response, ApiResult result) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-type", "application/json;charset=UTF-8");

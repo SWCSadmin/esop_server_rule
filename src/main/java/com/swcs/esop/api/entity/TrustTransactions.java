@@ -21,7 +21,7 @@ public class TrustTransactions extends ExcelUploadEntity {
 
     @ExcelCheckField(ExcelCheckEnum.NotEmpty)
     private String trust_account_id;
-    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty, ExcelCheckEnum.Date})
+    @ExcelCheckField(value = {ExcelCheckEnum.NotEmpty})
     @ExcelDateFormat(value = "yyyy-MM-dd", original = "yyyy/MM/dd")
     private String date;
     @ExcelCheckField(ExcelCheckEnum.NotEmpty)
