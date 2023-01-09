@@ -22,7 +22,7 @@ jobs:
         cache: maven
         
     - run: chmod +x build.sh
-    - run: chmod +x run_sit.sh
+    - run: chmod +x run_uat.sh
     - run: ./build.sh
       working-directory: /home/esopadmin/DEV/esop_server_rule/actions-runner/_work/esop_server_rule/esop_server_rule
     - run: sudo systemctl restart esop_dev_java_service
