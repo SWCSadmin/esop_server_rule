@@ -153,17 +153,19 @@ public class IncentiveStatusTrigger extends AbstractTaskTrigger {
     }
 
     private void notify(Notification notification) {
-        try {
-            notification.setMessage(notification.loadTemplate());
-            Future<Boolean> future = asyncTask.notify(notification);
-            boolean success = future.get();
-            if (success) {
-                logInfo("notify success");
-            } else {
-                logInfo("notify failed");
+        if (notification != null) {
+            try {
+                notification.setMessage(notification.loadTemplate());
+                Future<Boolean> future = asyncTask.notify(notification);
+                boolean success = future.get();
+                if (success) {
+                    logInfo("notify success");
+                } else {
+                    logInfo("notify failed");
+                }
+            } catch (Exception e) {
+                logError("notify error", e);
             }
-        } catch (Exception e) {
-            logError("notify error", e);
         }
     }
 }

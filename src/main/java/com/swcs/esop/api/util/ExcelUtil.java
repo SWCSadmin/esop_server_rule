@@ -60,8 +60,8 @@ public class ExcelUtil {
     public static ApiResult parseKycForCorporate(MultipartFile file) {
         KycVendorInfoReadListener vendorInfoReadListener = new KycVendorInfoReadListener();
         KycParticipantInfoReadListener kycParticipantInfoVendorReadListener = new KycParticipantInfoReadListener();
-//        KycContactPersonVendorReadListener kycContactPersonVendorReadListener = new KycContactPersonVendorReadListener(kycParticipantInfoVendorReadListener);
-        return parseExcel(file, vendorInfoReadListener, kycParticipantInfoVendorReadListener);
+        KycContactPersonVendorReadListener kycContactPersonVendorReadListener = new KycContactPersonVendorReadListener();
+        return parseExcel(file, vendorInfoReadListener, kycParticipantInfoVendorReadListener, kycContactPersonVendorReadListener);
     }
 
     private static ApiResult parseExcel(MultipartFile file, BaseReadListener... listeners) {

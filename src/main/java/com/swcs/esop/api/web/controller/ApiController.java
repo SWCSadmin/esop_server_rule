@@ -3,6 +3,7 @@ package com.swcs.esop.api.web.controller;
 import com.swcs.esop.api.common.Constants;
 import com.swcs.esop.api.common.base.BaseController;
 import com.swcs.esop.api.common.mvc.ApiResult;
+import com.swcs.esop.api.config.AppProperties;
 import com.swcs.esop.api.config.async.AsyncTask;
 import com.swcs.esop.api.entity.*;
 import com.swcs.esop.api.entity.db.IncentiveSchedule;
@@ -42,6 +43,18 @@ public class ApiController extends BaseController {
     private MessageSource messageSource;
     @Autowired
     private AsyncTask asyncTask;
+    @Autowired
+    private AppProperties appProperties;
+
+    /**
+     * 语言设置
+     *
+     * @return
+     */
+    @RequestMapping("/version")
+    public ApiResult version() {
+        return ApiResult.success(appProperties.getVersion());
+    }
 
     /**
      * 语言设置

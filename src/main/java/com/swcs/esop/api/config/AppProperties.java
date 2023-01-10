@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class AppProperties {
 
+    private String version;
     /**
      * node 服务地址
      */

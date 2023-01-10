@@ -37,9 +37,7 @@ public class IncentiveManagementReadListener extends BaseReadListener<IncentiveM
         }
         // 判断 participant_id 是否存在
         if (StringUtils.isNotBlank(o.getParticipant_id())) {
-            ParticipantInfo participantInfo = new ParticipantInfo();
-            participantInfo.setParticipant_id(o.getParticipant_id());
-            if (NodeServiceUtil.getEntity(participantInfo).isEmpty()) {
+            if (NodeServiceUtil.listIncentiveManagementByParticipantId(o.getParticipant_id()).isEmpty()) {
                 errorList.add("participant_id " + getMessage("IS_NOT_IN_DB"));
             }
         }

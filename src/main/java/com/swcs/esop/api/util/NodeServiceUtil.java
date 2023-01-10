@@ -45,6 +45,7 @@ public class NodeServiceUtil {
     private static final String URL_GET_PLAN_INFO_BY_PLAN_ID = "/get/planinfo/%s";
     private static final String URL_GET_COMPANY_INFO_BY_COMPANY_ID = "/get/companyinfo/%s";
     private static final String URL_GET_INCENTIVE_MANAGEMENT = "/get/incentive_management?schedule_batch_id=%s&participant_id=%s";
+    private static final String URL_GET_INCENTIVE_MANAGEMENT_BY_PARTICIPANT_ID = "/get/incentive_management?participant_id=%s";
     private static final String URL_GET_ALLSCHEDULES_BY_PLAN_ID = "/get/allschedules/%s";
     private static final String URL_GET_PARTICIPANTINFO_BY_PARTICIPANT_ID = "/get/participantinfo/%s";
     private static final String URL_GET_ALL_INCENTIVE_MANAGEMENT = "/get/all/incentive_management";
@@ -386,6 +387,15 @@ public class NodeServiceUtil {
             return list.get(0);
         }
         return null;
+    }
+
+    public static List<IncentiveManagement> listIncentiveManagementByParticipantId(String participant_id) {
+        String url = getRequestUrl(varReplace(URL_GET_INCENTIVE_MANAGEMENT_BY_PARTICIPANT_ID, participant_id));
+        List<IncentiveManagement> list = JSON.parseArray(HttpUtil.doGet(url), IncentiveManagement.class);
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        return list;
     }
 
     public static IncentiveManagement getIncentiveManagementByScheduleBatchId(String schedule_batch_id, String participant_id) {
